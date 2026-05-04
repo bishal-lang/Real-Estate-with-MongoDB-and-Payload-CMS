@@ -2,6 +2,7 @@
 
 import { Box, Container, Group, Button, Text } from '@mantine/core'
 import { Anchor } from '@mantine/core'
+import Link from 'next/link'
 
 export default function AppHeader() {
   return (
@@ -37,8 +38,13 @@ export default function AppHeader() {
           </Group>
 
           <Group>
-            <Button variant="subtle">Login</Button>
-            <Button color="green">Sign Up</Button>
+            <Button component={Link} href="/login" variant="subtle">
+              Login
+            </Button>
+
+            <Button component={Link} href="/register" color="green">
+              Sign Up
+            </Button>
           </Group>
         </Group>
       </Container>

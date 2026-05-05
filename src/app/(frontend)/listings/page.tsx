@@ -7,10 +7,12 @@ import { Box, Container } from '@mantine/core'
 
 export default function HomePage() {
   return (
-    <Box px="xl">
+    <Box px={{ base: 'md', sm: 'lg', xl: 'xl' }}>
+      <Header />
       <HeroSection />
       <ListingsGrid />
       <PaginationBar />
+      <Footer />
     </Box>
   )
 }

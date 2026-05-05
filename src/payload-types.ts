@@ -69,6 +69,15 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    agencies: Agency;
+    agents: Agent;
+    inquiries: Inquiry;
+    listings: Listing;
+    locations: Location;
+    properties: Property;
+    reviews: Review;
+    transactions: Transaction;
+    leads: Lead;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +87,15 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    agencies: AgenciesSelect<false> | AgenciesSelect<true>;
+    agents: AgentsSelect<false> | AgentsSelect<true>;
+    inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
+    listings: ListingsSelect<false> | ListingsSelect<true>;
+    locations: LocationsSelect<false> | LocationsSelect<true>;
+    properties: PropertiesSelect<false> | PropertiesSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
+    transactions: TransactionsSelect<false> | TransactionsSelect<true>;
+    leads: LeadsSelect<false> | LeadsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -123,6 +141,11 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  name: string;
+  phone?: string | null;
+  role: 'user' | 'agent' | 'admin';
+  avatar?: (string | null) | Media;
+  verified?: boolean | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -163,6 +186,152 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "agencies".
+ */
+export interface Agency {
+  id: string;
+  name: string;
+  registrationNumber?: string | null;
+  province?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "agents".
+ */
+export interface Agent {
+  id: string;
+  user: string | User;
+  agency?: (string | null) | Agency;
+  licenseNo?: string | null;
+  specializations?: string[] | null;
+  districts?: string[] | null;
+  commissionRate?: number | null;
+  verified?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inquiries".
+ */
+export interface Inquiry {
+  id: string;
+  property: string | Property;
+  user: string | User;
+  agent?: (string | null) | Agent;
+  message: string;
+  phone?: string | null;
+  preferredContact?: ('call' | 'whatsapp' | 'email') | null;
+  status?: ('pending' | 'replied' | 'closed') | null;
+  createdAt: string;
+  updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "properties".
+ */
+export interface Property {
+  id: string;
+  owner?: (string | null) | User;
+  agent?: (string | null) | Agent;
+  location?: (string | null) | Location;
+  title?: string | null;
+  description?: string | null;
+  type?: ('house' | 'land' | 'apartment' | 'commercial' | 'villa') | null;
+  area?: number | null;
+  areaUnit?: ('ropani' | 'aana' | 'bigha' | 'kattha' | 'sqft') | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  parking?: number | null;
+  images?:
+    | {
+        url?: string | null;
+        isPrimary?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations".
+ */
+export interface Location {
+  id: string;
+  province?: string | null;
+  district?: string | null;
+  municipality?: string | null;
+  ward?: number | null;
+  tole?: string | null;
+  coordinates?: {
+    lat?: number | null;
+    lng?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "listings".
+ */
+export interface Listing {
+  id: string;
+  property?: (string | null) | Property;
+  listingType?: ('for_sale' | 'for_rent') | null;
+  price?: number | null;
+  negotiable?: boolean | null;
+  featured?: boolean | null;
+  views?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: string;
+  agent?: (string | null) | Agent;
+  user?: (string | null) | User;
+  rating?: number | null;
+  comment?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transactions".
+ */
+export interface Transaction {
+  id: string;
+  property: string | Property;
+  user: string | User;
+  agent?: (string | null) | Agent;
+  message: string;
+  phone?: string | null;
+  preferredContact?: ('call' | 'whatsapp' | 'email') | null;
+  status?: ('pending' | 'replied' | 'closed') | null;
+  createdAt: string;
+  updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads".
+ */
+export interface Lead {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  message?: string | null;
+  listing?: (string | null) | Listing;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -192,6 +361,42 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'agencies';
+        value: string | Agency;
+      } | null)
+    | ({
+        relationTo: 'agents';
+        value: string | Agent;
+      } | null)
+    | ({
+        relationTo: 'inquiries';
+        value: string | Inquiry;
+      } | null)
+    | ({
+        relationTo: 'listings';
+        value: string | Listing;
+      } | null)
+    | ({
+        relationTo: 'locations';
+        value: string | Location;
+      } | null)
+    | ({
+        relationTo: 'properties';
+        value: string | Property;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: string | Review;
+      } | null)
+    | ({
+        relationTo: 'transactions';
+        value: string | Transaction;
+      } | null)
+    | ({
+        relationTo: 'leads';
+        value: string | Lead;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -240,6 +445,11 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  role?: T;
+  avatar?: T;
+  verified?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -274,6 +484,145 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "agencies_select".
+ */
+export interface AgenciesSelect<T extends boolean = true> {
+  name?: T;
+  registrationNumber?: T;
+  province?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "agents_select".
+ */
+export interface AgentsSelect<T extends boolean = true> {
+  user?: T;
+  agency?: T;
+  licenseNo?: T;
+  specializations?: T;
+  districts?: T;
+  commissionRate?: T;
+  verified?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inquiries_select".
+ */
+export interface InquiriesSelect<T extends boolean = true> {
+  property?: T;
+  user?: T;
+  agent?: T;
+  message?: T;
+  phone?: T;
+  preferredContact?: T;
+  status?: T;
+  createdAt?: T;
+  updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "listings_select".
+ */
+export interface ListingsSelect<T extends boolean = true> {
+  property?: T;
+  listingType?: T;
+  price?: T;
+  negotiable?: T;
+  featured?: T;
+  views?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations_select".
+ */
+export interface LocationsSelect<T extends boolean = true> {
+  province?: T;
+  district?: T;
+  municipality?: T;
+  ward?: T;
+  tole?: T;
+  coordinates?:
+    | T
+    | {
+        lat?: T;
+        lng?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "properties_select".
+ */
+export interface PropertiesSelect<T extends boolean = true> {
+  owner?: T;
+  agent?: T;
+  location?: T;
+  title?: T;
+  description?: T;
+  type?: T;
+  area?: T;
+  areaUnit?: T;
+  bedrooms?: T;
+  bathrooms?: T;
+  parking?: T;
+  images?:
+    | T
+    | {
+        url?: T;
+        isPrimary?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  agent?: T;
+  user?: T;
+  rating?: T;
+  comment?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transactions_select".
+ */
+export interface TransactionsSelect<T extends boolean = true> {
+  property?: T;
+  user?: T;
+  agent?: T;
+  message?: T;
+  phone?: T;
+  preferredContact?: T;
+  status?: T;
+  createdAt?: T;
+  updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads_select".
+ */
+export interface LeadsSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  message?: T;
+  listing?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,10 +1,43 @@
 'use client'
 
-import { Box, Container, Group, Button, Text } from '@mantine/core'
-import { Anchor } from '@mantine/core'
+import { useEffect, useState } from 'react'
+import { Box, Container, Group, Button, Text, Anchor } from '@mantine/core'
 import Link from 'next/link'
 
 export default function AppHeader() {
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/users/me', {
+          credentials: 'include',
+        })
+
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data.user)
+        }
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUser()
+  }, [])
+
+  const handleLogout = async () => {
+    await fetch('/api/users/logout', {
+      method: 'POST',
+      credentials: 'include',
+    })
+
+    window.location.reload()
+  }
+
   return (
     <Box
       component="header"
@@ -22,29 +55,44 @@ export default function AppHeader() {
             Modern Estate
           </Text>
 
-          <Group justify="center">
-            <Anchor href="/" underline="never">
+          <Group>
+            <Anchor component={Link} href="/">
               Home
             </Anchor>
-            <Anchor href="/listings" underline="never">
+            <Anchor component={Link} href="/listings">
               Listings
             </Anchor>
-            <Anchor href="/about" underline="never">
+            <Anchor component={Link} href="/about">
               About Us
             </Anchor>
-            <Anchor href="/contact" underline="never">
+            <Anchor component={Link} href="/contact">
               Contact Us
             </Anchor>
           </Group>
 
           <Group>
-            <Button component={Link} href="/login" variant="subtle">
-              Login
-            </Button>
+            {!loading &&
+              (user ? (
+                <>
+                  <Button component={Link} href="/dashboard" variant="subtle">
+                    Dashboard
+                  </Button>
 
-            <Button component={Link} href="/register" color="green">
-              Sign Up
-            </Button>
+                  <Button color="red" variant="light" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button component={Link} href="/login" variant="subtle">
+                    Login
+                  </Button>
+
+                  <Button component={Link} href="/register" color="green">
+                    Sign Up
+                  </Button>
+                </>
+              ))}
           </Group>
         </Group>
       </Container>

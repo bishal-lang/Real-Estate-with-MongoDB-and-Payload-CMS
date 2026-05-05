@@ -14,17 +14,22 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack: (webpackConfig) => {
-    webpackConfig.resolve.extensionAlias = {
-      '.cjs': ['.cts', '.cjs'],
-      '.js': ['.ts', '.tsx', '.js', '.jsx'],
-      '.mjs': ['.mts', '.mjs'],
+  webpack: (config, { dev, isServer }) => {
+    if (dev && !isServer) {
+      config.watchOptions = {
+        poll: 1000,
+      }
     }
-
-    return webpackConfig
+    return config
   },
-  turbopack: {
-    root: path.resolve(dirname),
+  assetPrefix: process.env.NODE_ENV === 'development' ? '' : undefined,
+  devIndicators: {
+    position: 'bottom-left',
+  },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['192.168.1.94:3000', 'localhost:3000'],
+    },
   },
 }
 

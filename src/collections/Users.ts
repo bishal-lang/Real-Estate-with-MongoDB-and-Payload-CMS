@@ -4,6 +4,8 @@ export const Users: CollectionConfig = {
   slug: 'users',
   auth: true,
 
+  versions: false,
+
   fields: [
     { name: 'name', type: 'text', required: true },
     { name: 'email', type: 'email', required: true },

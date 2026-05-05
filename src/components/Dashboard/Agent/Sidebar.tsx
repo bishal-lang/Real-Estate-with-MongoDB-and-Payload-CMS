@@ -3,8 +3,6 @@
 import { Stack, NavLink, Avatar, Text } from '@mantine/core'
 import {
   IconHeart,
-  IconMessage,
-  IconUser,
   IconHelp,
   IconLogout,
   IconMail,
@@ -14,8 +12,22 @@ import {
   IconList,
   IconAnalyze,
 } from '@tabler/icons-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function Sidebar() {
+  const pathname = usePathname()
+
+  const links = [
+    { label: 'Listings', icon: IconList, href: '/dashboard/agent/listings' },
+    { label: 'Lead Management', icon: IconHeart, href: '/dashboard/agent/leads' },
+    { label: 'Performance', icon: IconAnalyze, href: '/dashboard/agent/performance' },
+    { label: 'Messages', icon: IconMail, href: '/dashboard/agent/messages' },
+    { label: 'Settings', icon: IconSettings, href: '/dashboard/agent/settings' },
+    { label: 'Profile', icon: IconMan, href: '/dashboard/agent/profile' },
+    { label: 'New Listing', icon: IconPlus, href: '/dashboard/agent/new' },
+  ]
+
   return (
     <Stack justify="space-between" h="100%" p="md">
       <div>
@@ -29,18 +41,34 @@ export default function Sidebar() {
           </div>
         </Stack>
 
-        <NavLink label="Lead Management" leftSection={<IconHeart size={16} />} active />
-        <NavLink label="Listings" leftSection={<IconList size={16} />} />
-        <NavLink label="Performance" leftSection={<IconAnalyze size={16} />} />
-        <NavLink label="Messages" leftSection={<IconMail size={18} />} />
-        <NavLink label="Settings" leftSection={<IconSettings size={18} />} />
-        <NavLink label="Profile" leftSection={<IconMan size={18} />} />
-        <NavLink label="New Listing" leftSection={<IconPlus size={18} />} />
+        {links.map((link) => (
+          <NavLink
+            key={link.href}
+            label={link.label}
+            leftSection={<link.icon size={16} />}
+            component={Link}
+            href={link.href}
+            active={pathname === link.href}
+          />
+        ))}
       </div>
 
       <Stack>
-        <NavLink label="Support" leftSection={<IconHelp size={16} />} />
-        <NavLink label="Sign Out" leftSection={<IconLogout size={16} />} />
+        <NavLink
+          label="Support"
+          leftSection={<IconHelp size={16} />}
+          component={Link}
+          href="/support"
+        />
+
+        <NavLink
+          label="Sign Out"
+          leftSection={<IconLogout size={16} />}
+          onClick={() => {
+            // TODO: replace with your auth logout
+            console.log('logout')
+          }}
+        />
       </Stack>
     </Stack>
   )

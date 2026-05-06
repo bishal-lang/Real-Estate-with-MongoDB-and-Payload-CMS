@@ -1,7 +1,11 @@
-import { Card, Text, Stack, Group, Badge } from '@mantine/core'
-import Link from 'next/link'
+'use client'
 
-export default function ConversationsList() {
+import { Card, Text, Stack, Group } from '@mantine/core'
+import { ConversationProvider, useConversations } from './ConversationContext'
+
+function InnerList() {
+  const { conversations, selected, setSelected } = useConversations()
+
   return (
     <Card withBorder p="md" h="100%">
       <Stack gap="md">
@@ -10,30 +14,39 @@ export default function ConversationsList() {
         </Group>
 
         <Stack gap="xs">
-          <Card withBorder p="sm" bg="blue.0">
-            <Group justify="space-between">
-              <Text fw={600}>Sarah Mitchell</Text>
-              <Text size="xs">10:42 AM</Text>
-            </Group>
-            <Text size="sm" c="blue">
-              The Glass Pavilion, Aspen
-            </Text>
-            <Text size="sm" c="dimmed" lineClamp={1}>
-              Could we schedule a private viewing...
-            </Text>
-          </Card>
+          {conversations.map((c) => (
+            <Card
+              key={c.id}
+              withBorder
+              p="sm"
+              bg={selected?.id === c.id ? 'blue.0' : undefined}
+              style={{ cursor: 'pointer' }}
+              onClick={() => setSelected(c)}
+            >
+              <Group justify="space-between">
+                <Text fw={600}>{c.name}</Text>
+                <Text size="xs">{c.time}</Text>
+              </Group>
 
-          <Card withBorder p="sm">
-            <Group justify="space-between">
-              <Text fw={600}>Marcus Sterling</Text>
-              <Text size="xs">Yesterday</Text>
-            </Group>
-            <Text size="sm" c="dimmed">
-              Park Avenue Luxury Suite
-            </Text>
-          </Card>
+              <Text size="sm" c={selected?.id === c.id ? 'blue' : 'dimmed'}>
+                {c.listingTitle || 'No listing'}
+              </Text>
+
+              <Text size="sm" c="dimmed" lineClamp={1}>
+                {c.lastMessage}
+              </Text>
+            </Card>
+          ))}
         </Stack>
       </Stack>
     </Card>
+  )
+}
+
+export default function ConversationsList() {
+  return (
+    <ConversationProvider>
+      <InnerList />
+    </ConversationProvider>
   )
 }

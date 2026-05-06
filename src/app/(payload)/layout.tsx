@@ -8,6 +8,7 @@ import React from 'react'
 
 import { importMap } from './admin/importMap.js'
 import './custom.scss'
+import { MantineProvider } from '@mantine/core'
 
 type Args = {
   children: React.ReactNode
@@ -24,7 +25,7 @@ const serverFunction: ServerFunctionClient = async function (args) {
 
 const Layout = ({ children }: Args) => (
   <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
-    {children}
+    <MantineProvider>{children}</MantineProvider>
   </RootLayout>
 )
 

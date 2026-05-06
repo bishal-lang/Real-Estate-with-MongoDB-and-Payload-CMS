@@ -60,9 +60,51 @@ export const Agents: CollectionConfig = {
     },
 
     { name: 'licenseNo', type: 'text' },
-    { name: 'specializations', type: 'text', hasMany: true },
     { name: 'districts', type: 'text', hasMany: true },
     { name: 'commissionRate', type: 'number' },
     { name: 'verified', type: 'checkbox' },
+    { name: 'position', type: 'text' },
+    {
+      name: 'licenseActive',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+
+    {
+      name: 'bio',
+      type: 'textarea',
+    },
+
+    // 🔹 SPECIALIZATIONS (matches your card UI)
+    {
+      name: 'specializations',
+      type: 'array',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'desc',
+          type: 'text',
+        },
+      ],
+    },
+
+    // 🔹 CONTACT INFO
+    {
+      name: 'phone',
+      type: 'text',
+    },
+    {
+      name: 'officeAddress',
+      type: 'text',
+    },
+    {
+      name: 'website',
+      type: 'text',
+    },
   ],
+  timestamps: true,
 }

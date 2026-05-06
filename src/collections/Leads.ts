@@ -18,6 +18,11 @@ export const Leads: CollectionConfig = {
       type: 'email',
     },
     {
+      name: 'agent',
+      type: 'relationship',
+      relationTo: 'agents',
+    },
+    {
       name: 'message',
       type: 'textarea',
     },

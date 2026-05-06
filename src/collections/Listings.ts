@@ -19,6 +19,13 @@ export const Listings: CollectionConfig = {
     },
 
     {
+      name: 'agent',
+      type: 'relationship',
+      relationTo: 'agents', // your auth collection
+      required: true,
+    },
+
+    {
       name: 'listingType',
       type: 'select',
       options: ['for_sale', 'for_rent'],

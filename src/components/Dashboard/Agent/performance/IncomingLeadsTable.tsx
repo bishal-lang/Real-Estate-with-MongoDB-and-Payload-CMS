@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import {
   Card,
   Table,
@@ -14,28 +17,48 @@ import {
 } from '@mantine/core'
 import { IconPhone, IconMail, IconCalendar } from '@tabler/icons-react'
 
-const leads = [
-  {
-    name: 'Eleanor Rigby',
-    type: 'Luxury Residential',
-    district: 'Upper East Side',
-    status: 'New',
-  },
-  {
-    name: 'Marcus Kane',
-    type: 'Commercial/Retail',
-    district: 'Tribeca',
-    status: 'Contacted',
-  },
-  {
-    name: 'Sarah Woods',
-    type: 'Modern Penthouse',
-    district: 'Chelsea',
-    status: 'Scheduled',
-  },
-]
-
 export default function IncomingLeadsTable() {
+  const [leads, setLeads] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        const agentRes = await fetch('/api/agents/me')
+        if (!agentRes.ok) return
+        const agent = await agentRes.json()
+
+        const url = new URL('/api/leads', window.location.origin)
+        url.searchParams.set('depth', '1')
+        url.searchParams.set('where[agent][equals]', agent.id)
+
+        const res = await fetch(url.toString())
+        if (!res.ok) return
+
+        const result = await res.json()
+
+        const mapped = result.docs.map((lead: any) => {
+          const loc = lead.location
+
+          const district = loc ? loc.district || loc.municipality || 'Unknown' : 'Unknown'
+
+          return {
+            id: lead.id,
+            name: lead.buyerName || 'Unnamed',
+            type: lead.type || 'Property Inquiry',
+            district,
+            status: lead.status || 'New',
+          }
+        })
+
+        setLeads(mapped)
+      } catch (err) {
+        console.error('❌ leads fetch failed', err)
+      }
+    }
+
+    fetchLeads()
+  }, [])
+
   return (
     <Card withBorder radius="md">
       <Group justify="space-between" mb="md">
@@ -54,7 +77,7 @@ export default function IncomingLeadsTable() {
 
         <TableTbody>
           {leads.map((lead) => (
-            <TableTr key={lead.name}>
+            <TableTr key={lead.id}>
               <TableTd>
                 <Group>
                   <Avatar radius="xl">{lead.name[0]}</Avatar>

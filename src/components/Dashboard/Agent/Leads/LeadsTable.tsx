@@ -1,49 +1,135 @@
 'use client'
 
-import { Card, Table, Group, Avatar, Text, Badge, Progress } from '@mantine/core'
+import { useEffect, useState } from 'react'
+import {
+  Card,
+  Table,
+  Group,
+  Avatar,
+  Text,
+  Badge,
+  Progress,
+  TableTbody,
+  TableTd,
+  TableTh,
+  TableThead,
+  TableTr,
+} from '@mantine/core'
+
+type Lead = {
+  id: string
+  buyerName: string
+  location: string
+  status: 'active' | 'pending' | 'closed'
+  budget: number
+  score: number
+}
 
 export default function LeadsTable() {
-  const data = [1, 2, 3]
+  const [data, setData] = useState<Lead[]>([])
+
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        const agentRes = await fetch('/api/agents/me')
+        if (!agentRes.ok) return
+
+        const agent = await agentRes.json()
+
+        const url = new URL('/api/leads', window.location.origin)
+        url.searchParams.set('depth', '1')
+        url.searchParams.set('where[agent][equals]', agent.id)
+
+        const res = await fetch(url.toString())
+        if (!res.ok) return
+
+        const result = await res.json()
+
+        const mapped: Lead[] = result.docs.map((item: any) => {
+          const loc = item.location
+
+          const location = loc
+            ? [
+                loc.tole,
+                loc.ward ? `Ward ${loc.ward}` : null,
+                loc.municipality,
+                loc.district,
+                loc.province,
+              ]
+                .filter(Boolean)
+                .join(', ')
+            : 'Unknown location'
+
+          return {
+            id: item.id,
+            buyerName: item.buyerName || 'Unnamed Buyer',
+            location,
+            status: item.status || 'pending',
+            budget: item.budget || 0,
+            score: item.score || 50,
+          }
+        })
+
+        setData(mapped)
+      } catch (err) {
+        console.error('❌ Failed to fetch leads', err)
+      }
+    }
+
+    fetchLeads()
+  }, [])
 
   return (
     <Card withBorder>
       <Table highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Buyer</Table.Th>
-            <Table.Th>Status</Table.Th>
-            <Table.Th>Budget</Table.Th>
-            <Table.Th>Score</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
+        <TableThead>
+          <TableTr>
+            <TableTh>Buyer</TableTh>
+            <TableTh>Status</TableTh>
+            <TableTh>Budget</TableTh>
+            <TableTh>Score</TableTh>
+          </TableTr>
+        </TableThead>
 
-        <Table.Tbody>
-          {data.map((i) => (
-            <Table.Tr key={i}>
-              <Table.Td>
+        <TableTbody>
+          {data.map((item) => (
+            <TableTr key={item.id}>
+              <TableTd>
                 <Group>
-                  <Avatar>{i}</Avatar>
+                  <Avatar>{item.buyerName?.[0]}</Avatar>
+
                   <div>
-                    <Text fw={600}>Buyer {i}</Text>
+                    <Text fw={600}>{item.buyerName}</Text>
+
                     <Text size="sm" c="dimmed">
-                      Kathmandu
+                      {item.location}
                     </Text>
                   </div>
                 </Group>
-              </Table.Td>
+              </TableTd>
 
-              <Table.Td>
-                <Badge color="green">Active</Badge>
-              </Table.Td>
+              <TableTd>
+                <Badge
+                  color={
+                    item.status === 'active'
+                      ? 'green'
+                      : item.status === 'pending'
+                        ? 'yellow'
+                        : 'gray'
+                  }
+                >
+                  {item.status}
+                </Badge>
+              </TableTd>
 
-              <Table.Td>$500k</Table.Td>
+              <TableTd>{item.budget ? `$${item.budget.toLocaleString()}` : '—'}</TableTd>
 
-              <Table.Td>
-                <Progress value={70 + i * 5} />
-              </Table.Td>
-            </Table.Tr>
+              <TableTd>
+                <Progress value={item.score} />
+              </TableTd>
+            </TableTr>
           ))}
-        </Table.Tbody>
+        </TableTbody>
       </Table>
     </Card>
   )

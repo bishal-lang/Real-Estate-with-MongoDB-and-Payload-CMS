@@ -1,19 +1,41 @@
+'use client'
+
 import { Card, Text, Stack, Image, Badge } from '@mantine/core'
+import { useConversations } from './ConversationContext'
 
 export default function ContextSidebar() {
+  const { selected } = useConversations()
+
+  if (!selected) return null
+
+  const listing = selected.listing
+  const lead = selected.lead
+
+  const image = listing?.images?.[0]?.image?.url || 'https://via.placeholder.com/300'
+
+  const location = listing?.property?.location
+    ? [listing.property.location.district, listing.property.location.province]
+        .filter(Boolean)
+        .join(', ')
+    : 'Unknown'
+
   return (
     <>
       <Text fw={600}>Contextual Listing</Text>
-      <br></br>
+      <br />
+
       <Stack>
         <Card withBorder>
-          <Image src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2" height={140} />
+          <Image src={image} height={140} />
+
           <Stack mt="sm">
-            <Text fw={600}>The Glass Pavilion</Text>
+            <Text fw={600}>{listing?.property?.title}</Text>
+
             <Text size="sm" c="dimmed">
-              Aspen, Colorado • $12.5M
+              {location} • ${listing?.price?.toLocaleString?.() || '—'}
             </Text>
-            <Badge color="green">Active Listing</Badge>
+
+            <Badge color="green">{listing?.status || 'Active'}</Badge>
           </Stack>
         </Card>
 
@@ -21,9 +43,10 @@ export default function ContextSidebar() {
           <Text fw={600} mb="sm">
             Lead Info
           </Text>
+
           <Stack gap="xs">
-            <Text size="sm">Status: Highly Engaged</Text>
-            <Text size="sm">Source: Direct Inquiry</Text>
+            <Text size="sm">Status: {lead?.status || 'Unknown'}</Text>
+            <Text size="sm">Source: {lead?.source || '—'}</Text>
           </Stack>
         </Card>
       </Stack>

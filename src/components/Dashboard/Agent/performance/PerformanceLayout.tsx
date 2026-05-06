@@ -19,8 +19,8 @@ export default function PerformanceLayout() {
 
         <GridCol span={{ base: 12, md: 4 }}>
           <VolumeChart />
-          <TopListings />
-          <Schedule />
+          {/* <TopListings /> */}
+          {/* <Schedule /> */}
         </GridCol>
       </Grid>
     </>

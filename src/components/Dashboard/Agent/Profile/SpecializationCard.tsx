@@ -1,26 +1,26 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import { Card, Grid, GridCol, Stack, Text, ThemeIcon, Title } from '@mantine/core'
 import { IconBuilding } from '@tabler/icons-react'
 
-const data = [
-  {
-    title: 'Luxury Residential',
-    desc: 'Penthouse acquisitions and brownstone restorations.',
-  },
-  {
-    title: 'Tribeca Specialist',
-    desc: 'Deep local expertise in high-value districts.',
-  },
-  {
-    title: 'Portfolio Strategy',
-    desc: 'Asset planning & appreciation.',
-  },
-  {
-    title: 'Institutional Liaison',
-    desc: 'Connecting funds with real estate.',
-  },
-]
-
 export function SpecializationsCard() {
+  const [items, setItems] = useState<any[]>([])
+
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const res = await fetch('/api/agents/me')
+        if (!res.ok) return
+        const data = await res.json()
+        setItems(data?.specializations || [])
+      } catch (e) {
+        console.error('specializations fetch failed', e)
+      }
+    }
+    run()
+  }, [])
+
   return (
     <Card p="xl" withBorder>
       <Title order={3} mb="lg">
@@ -28,19 +28,21 @@ export function SpecializationsCard() {
       </Title>
 
       <Grid>
-        {data.map((item) => (
-          <GridCol key={item.title} span={{ base: 12, md: 6 }}>
+        {items.map((item: any, i: number) => (
+          <GridCol key={i} span={{ base: 12, md: 6 }}>
             <Card withBorder p="md">
               <Stack gap="xs">
                 <ThemeIcon variant="light">
                   <IconBuilding size={18} />
                 </ThemeIcon>
 
-                <Text fw={600}>{item.title}</Text>
+                <Text fw={600}>{item.title || item}</Text>
 
-                <Text size="sm" c="dimmed">
-                  {item.desc}
-                </Text>
+                {item.desc && (
+                  <Text size="sm" c="dimmed">
+                    {item.desc}
+                  </Text>
+                )}
               </Stack>
             </Card>
           </GridCol>

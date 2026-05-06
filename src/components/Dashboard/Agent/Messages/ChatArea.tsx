@@ -1,19 +1,25 @@
+'use client'
+
 import { Card, Text, Group, Stack, Avatar, Button, Box } from '@mantine/core'
 import MessageBubble from './MessageBubble'
 import MessageInput from './MessageInput'
+import { useConversations } from './ConversationContext'
 
 export default function ChatArea() {
+  const { selected } = useConversations()
+
+  if (!selected) return null
+
   return (
     <Card withBorder p={0} h="100%">
-      {/* Header */}
       <Box>
         <Group justify="space-between">
           <Group>
-            <Avatar src="https://i.pravatar.cc/100" />
+            <Avatar src={selected.avatar} />
             <div>
-              <Text fw={600}>Sarah Mitchell</Text>
+              <Text fw={600}>{selected.name}</Text>
               <Text size="xs" c="dimmed">
-                Active now • Interested in "The Glass Pavilion"
+                Active now • Interested in "{selected.listingTitle}"
               </Text>
             </div>
           </Group>
@@ -22,24 +28,20 @@ export default function ChatArea() {
         </Group>
       </Box>
 
-      {/* Messages */}
       <Stack p="md" style={{ flex: 1, overflowY: 'auto' }}>
-        <MessageBubble
-          incoming
-          text="Good morning! I've been reviewing the details..."
-          time="10:30 AM"
-        />
-
-        <MessageBubble text="Hello Sarah, absolutely. The property features..." time="10:35 AM" />
-
-        <MessageBubble
-          incoming
-          text="That sounds impressive. Could we schedule a viewing?"
-          time="10:42 AM"
-        />
+        {selected.messages.map((m: any, i: number) => (
+          <MessageBubble
+            key={i}
+            incoming={m.sender === 'client'}
+            text={m.text}
+            time={new Date(m.createdAt).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          />
+        ))}
       </Stack>
 
-      {/* Input */}
       <MessageInput />
     </Card>
   )

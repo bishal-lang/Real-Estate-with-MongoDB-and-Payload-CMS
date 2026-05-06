@@ -197,6 +197,7 @@ export interface Media {
 export interface Listing {
   id: string;
   property?: (string | null) | Property;
+  agent: string | Agent;
   listingType?: ('for_sale' | 'for_rent') | null;
   price?: number | null;
   negotiable?: boolean | null;
@@ -249,10 +250,22 @@ export interface Agent {
   user: string | User;
   agency?: (string | null) | Agency;
   licenseNo?: string | null;
-  specializations?: string[] | null;
   districts?: string[] | null;
   commissionRate?: number | null;
   verified?: boolean | null;
+  position?: string | null;
+  licenseActive?: boolean | null;
+  bio?: string | null;
+  specializations?:
+    | {
+        title: string;
+        desc?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  phone?: string | null;
+  officeAddress?: string | null;
+  website?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -339,6 +352,7 @@ export interface Lead {
   id: string;
   name?: string | null;
   email?: string | null;
+  agent?: (string | null) | Agent;
   message?: string | null;
   listing?: (string | null) | Listing;
   updatedAt: string;
@@ -352,6 +366,17 @@ export interface Conversation {
   id: string;
   participants?: (string | User)[] | null;
   listing?: (string | null) | Listing;
+  agent: string | Agent;
+  client: string | User;
+  lead?: (string | null) | Lead;
+  messages?:
+    | {
+        sender: 'agent' | 'client';
+        text: string;
+        createdAt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -552,10 +577,22 @@ export interface AgentsSelect<T extends boolean = true> {
   user?: T;
   agency?: T;
   licenseNo?: T;
-  specializations?: T;
   districts?: T;
   commissionRate?: T;
   verified?: T;
+  position?: T;
+  licenseActive?: T;
+  bio?: T;
+  specializations?:
+    | T
+    | {
+        title?: T;
+        desc?: T;
+        id?: T;
+      };
+  phone?: T;
+  officeAddress?: T;
+  website?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -580,6 +617,7 @@ export interface InquiriesSelect<T extends boolean = true> {
  */
 export interface ListingsSelect<T extends boolean = true> {
   property?: T;
+  agent?: T;
   listingType?: T;
   price?: T;
   negotiable?: T;
@@ -674,6 +712,7 @@ export interface TransactionsSelect<T extends boolean = true> {
 export interface LeadsSelect<T extends boolean = true> {
   name?: T;
   email?: T;
+  agent?: T;
   message?: T;
   listing?: T;
   updatedAt?: T;
@@ -686,6 +725,17 @@ export interface LeadsSelect<T extends boolean = true> {
 export interface ConversationsSelect<T extends boolean = true> {
   participants?: T;
   listing?: T;
+  agent?: T;
+  client?: T;
+  lead?: T;
+  messages?:
+    | T
+    | {
+        sender?: T;
+        text?: T;
+        createdAt?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

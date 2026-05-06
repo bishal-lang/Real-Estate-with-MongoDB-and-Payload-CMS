@@ -32,6 +32,7 @@ export default function LoginForm() {
       const res = await fetch('/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // ✅ CRITICAL
         body: JSON.stringify({ email, password }),
       })
 
@@ -41,8 +42,21 @@ export default function LoginForm() {
         throw new Error(data.errors?.[0]?.message || 'Login failed')
       }
 
-      // ✅ success
-      router.push('/dashboard')
+      const user = data.user
+      console.log(data)
+
+      switch (user.role) {
+        case 'agent':
+          router.push('/dashboard/agent')
+          break
+
+        case 'admin':
+          router.push('/admin')
+          break
+
+        default:
+          router.push('/dashboard/user')
+      }
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -65,6 +79,7 @@ export default function LoginForm() {
           placeholder="name@firm.com"
           value={email}
           onChange={(e) => setEmail(e.currentTarget.value)}
+          autoComplete="username"
           required
         />
 
@@ -73,6 +88,7 @@ export default function LoginForm() {
           placeholder="••••••••"
           value={password}
           onChange={(e) => setPassword(e.currentTarget.value)}
+          autoComplete="current-password"
           required
         />
 

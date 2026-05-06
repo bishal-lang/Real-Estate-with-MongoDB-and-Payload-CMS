@@ -1,21 +1,21 @@
-'use client'
-
-import { AppShell } from '@mantine/core'
+import { AppShell, AppShellHeader, AppShellMain, AppShellNavbar } from '@mantine/core'
 import Header from '@/components/Header'
 import Sidebar from '@/components/Dashboard/User/Sidebar'
+import { getCurrentUser } from '@/lib/getCurrentUser'
+import { redirect } from 'next/navigation'
 
-export default function UserLayout({ children }: { children: React.ReactNode }) {
+export default async function UserLayout({ children }: { children: React.ReactNode }) {
   return (
     <AppShell header={{ height: 70 }} navbar={{ width: 260, breakpoint: 'sm' }} padding="lg">
-      <AppShell.Header>
+      <AppShellHeader>
         <Header />
-      </AppShell.Header>
+      </AppShellHeader>
 
-      <AppShell.Navbar p="md">
+      <AppShellNavbar p="md">
         <Sidebar />
-      </AppShell.Navbar>
+      </AppShellNavbar>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShellMain>{children}</AppShellMain>
     </AppShell>
   )
 }

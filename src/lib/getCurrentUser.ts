@@ -1,22 +1,29 @@
-import { headers } from 'next/headers'
+import { cookies } from 'next/headers'
 
 export async function getCurrentUser() {
-  const headersList = await headers()
+  const cookieStore = await cookies()
 
   const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
+  // ✅ manually build cookie header
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ')
+
   const res = await fetch(`${baseUrl}/api/users/me`, {
     headers: {
-      cookie: headersList.get('cookie') || '',
+      Cookie: cookieHeader,
     },
     cache: 'no-store',
   })
 
   if (!res.ok) {
-    const text = await res.text()
-    console.error(' user fetch failed:', res.status, text)
+    console.error('ME FAILED:', res.status)
     return null
   }
 
-  return res.json()
+  const data = await res.json()
+
+  return data.user || null
 }

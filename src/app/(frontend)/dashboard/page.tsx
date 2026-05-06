@@ -1,18 +1,14 @@
-import { getUser } from '@/lib/getUser'
+// app/(frontend)/dashboard/layout.tsx
+
 import { redirect } from 'next/navigation'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 
-export default async function Dashboard() {
-  const user = await getUser() // from Payload / auth
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const user = await getCurrentUser()
 
-  if (!user) redirect('/login')
-
-  if (user.role === 'agent') {
-    redirect('/dashboard/agent')
+  if (!user) {
+    redirect('/login')
   }
 
-  if (user.role === 'user') {
-    redirect('/dashboard/user')
-  }
-
-  return null
+  return <>{children}</>
 }

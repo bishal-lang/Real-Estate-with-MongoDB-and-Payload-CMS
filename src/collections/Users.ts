@@ -8,6 +8,7 @@ export const Users: CollectionConfig = {
 
   access: {
     read: () => true,
+    create: () => true,
   },
 
   admin: {
@@ -22,8 +23,8 @@ export const Users: CollectionConfig = {
     {
       name: 'role',
       type: 'select',
+      defaultValue: 'user',
       options: ['user', 'agent', 'admin'],
-      required: true,
     },
 
     {

@@ -78,6 +78,10 @@ export default function AppHeader() {
                     Dashboard
                   </Button>
 
+                  <Button component={Link} href="/agentRegister" color="green">
+                    Become an Agent
+                  </Button>
+
                   <Button color="red" variant="light" onClick={handleLogout}>
                     Logout
                   </Button>

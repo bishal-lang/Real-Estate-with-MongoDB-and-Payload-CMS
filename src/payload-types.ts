@@ -147,7 +147,7 @@ export interface User {
   id: string;
   name: string;
   phone?: string | null;
-  role: 'user' | 'agent' | 'admin';
+  role?: ('user' | 'agent' | 'admin') | null;
   avatar?: (string | null) | Media;
   savedListings?: (string | Listing)[] | null;
   isPremium?: boolean | null;

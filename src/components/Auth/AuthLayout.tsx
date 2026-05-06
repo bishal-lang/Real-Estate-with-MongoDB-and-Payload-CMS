@@ -1,4 +1,4 @@
-import Background from './Backgroound'
+import Background from './Background'
 import LoginCard from './LoginCard'
 
 export default function AuthLayout() {

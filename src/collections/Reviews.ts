@@ -2,6 +2,14 @@ import type { CollectionConfig } from 'payload'
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
+  access: {
+    read: () => true,
+  },
+
+  admin: {
+    useAsTitle: 'agent',
+  },
+
   fields: [
     {
       name: 'agent',

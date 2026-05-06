@@ -2,6 +2,12 @@ import { CollectionConfig } from 'payload'
 
 export const Leads: CollectionConfig = {
   slug: 'leads',
+  access: {
+    read: () => true,
+  },
+  admin: {
+    useAsTitle: 'name',
+  },
   fields: [
     {
       name: 'name',

@@ -1,10 +1,30 @@
 'use client'
 
 import { Box, Text } from '@mantine/core'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function ConversationItem({ active }: { active?: boolean }) {
+export default function ConversationItem({
+  active,
+  conversation,
+}: {
+  active?: boolean
+  conversation: any
+}) {
+  const router = useRouter()
+  const params = useSearchParams()
+
+  const listing = conversation.listing
+  const otherUser = conversation.participants?.[0]
+
+  const handleClick = () => {
+    const search = new URLSearchParams(params.toString())
+    search.set('conversation', conversation.id)
+    router.push(`?${search.toString()}`)
+  }
+
   return (
     <Box
+      onClick={handleClick}
       p="md"
       style={{
         borderRadius: 8,
@@ -13,15 +33,15 @@ export default function ConversationItem({ active }: { active?: boolean }) {
       }}
     >
       <Text fw={600} size="sm">
-        Julian Vance
+        {otherUser?.name || 'User'}
       </Text>
 
       <Text size="xs" fw={700}>
-        The Obsidian Penthouse
+        {listing?.title || 'Listing'}
       </Text>
 
       <Text size="xs" c="dimmed" lineClamp={1}>
-        I've attached the latest structural reports...
+        {conversation?.lastMessage?.text || 'No messages yet'}
       </Text>
     </Box>
   )

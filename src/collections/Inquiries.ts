@@ -2,12 +2,17 @@ import type { CollectionConfig } from 'payload'
 
 export const Inquiries: CollectionConfig = {
   slug: 'inquiries',
-
+  access: {
+    read: () => true,
+  },
+  admin: {
+    useAsTitle: 'listings',
+  },
   fields: [
     {
-      name: 'property',
+      name: 'listings',
       type: 'relationship',
-      relationTo: 'properties',
+      relationTo: 'listings',
       required: true,
     },
     {

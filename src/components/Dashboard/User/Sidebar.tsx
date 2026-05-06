@@ -49,13 +49,13 @@ export default function Sidebar() {
             active={pathname === '/dashboard/user/profile'}
           />
 
-          <NavLink
+          {/* <NavLink
             label="Settings"
             leftSection={<IconSettings size={18} />}
             component={Link}
             href="/dashboard/user/settings"
             active={pathname === '/dashboard/user/settings'}
-          />
+          /> */}
         </Stack>
       </div>
 

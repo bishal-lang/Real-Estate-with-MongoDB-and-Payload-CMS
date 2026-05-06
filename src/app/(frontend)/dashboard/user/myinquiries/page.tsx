@@ -1,6 +1,4 @@
-'use client'
-
-import { Container, Grid, Stack, Title, Text } from '@mantine/core'
+import { Container, Grid, Stack, Title, Text, GridCol } from '@mantine/core'
 import InquiryFilters from '@/components/Dashboard/User/MyInquiries/InquiryFilters'
 import InquiriesList from '@/components/Dashboard/User/MyInquiries/InquiriesList'
 import RightSidebar from '@/components/Dashboard/User/MyInquiries/RightSidebar'
@@ -18,16 +16,16 @@ export default function MyInquiriesPage() {
         </div>
 
         <Grid>
-          <Grid.Col span={8}>
+          <GridCol span={8}>
             <Stack>
               <InquiryFilters />
               <InquiriesList />
             </Stack>
-          </Grid.Col>
+          </GridCol>
 
-          <Grid.Col span={4}>
+          {/* <GridCol span={4}>
             <RightSidebar />
-          </Grid.Col>
+          </GridCol> */}
         </Grid>
       </Stack>
     </Container>

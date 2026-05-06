@@ -1,5 +1,3 @@
-'use client'
-
 import {
   Container,
   Title,
@@ -9,14 +7,20 @@ import {
   Card,
   Image,
   Group,
-  TextInput,
-  Select,
   Stack,
   Box,
   Paper,
+  TextInput,
+  Select,
+  CardSection,
+  GridCol,
 } from '@mantine/core'
 
-export default function HomePage() {
+import { getFeaturedListings } from '@/lib/getFeaturedListings'
+
+export default async function HomePage() {
+  const data = await getFeaturedListings()
+
   return (
     <>
       {/* HERO */}
@@ -40,22 +44,12 @@ export default function HomePage() {
             </Title>
 
             <Text c="white" opacity={0.9} maw={600}>
-              Discover premium properties across Nepal tailored to your lifestyle and investment
-              goals.
+              Discover premium properties across Nepal tailored to your lifestyle.
             </Text>
 
-            {/* SEARCH BAR */}
-            <Paper
-              bg="white"
-              p="md"
-              radius="md"
-              shadow="sm"
-              style={{ width: '100%', maxWidth: 900 }}
-            >
+            <Paper bg="white" p="md" radius="md" shadow="sm" maw={900}>
               <Group align="end" wrap="wrap">
-                <TextInput placeholder="Location" style={{ flex: 1, minWidth: 150 }} />
-
-                {/* <TextInput placeholder="Price range" style={{ flex: 1, minWidth: 150 }} /> */}
+                <TextInput placeholder="Location" style={{ flex: 1 }} />
 
                 <Select
                   placeholder="Price Range"
@@ -66,11 +60,7 @@ export default function HomePage() {
                   ]}
                 />
 
-                <Select
-                  placeholder="Type"
-                  data={['Renting', 'Selling']}
-                  style={{ flex: 1, minWidth: 150 }}
-                />
+                <Select placeholder="Type" data={['Renting', 'Selling']} style={{ flex: 1 }} />
 
                 <Button color="green">Search</Button>
               </Group>
@@ -86,50 +76,55 @@ export default function HomePage() {
         </Title>
 
         <Grid>
-          {[1, 2, 3].map((item) => (
-            <Grid.Col key={item} span={{ base: 12, md: 4 }}>
-              <Card shadow="sm" radius="md" withBorder>
-                <Card.Section>
-                  <Image
-                    src="https://images.unsplash.com/photo-1568605114967-8130f3a36994"
-                    h={220}
-                    alt="property"
-                  />
-                </Card.Section>
+          {data?.docs?.map((listing: any) => {
+            const property = typeof listing.property === 'object' ? listing.property : null
 
-                <Stack mt="md" gap={4}>
-                  <Text fw={700}>$2,500,000</Text>
+            const location = property?.location
 
-                  <Text size="sm" c="dimmed">
-                    Kathmandu, Nepal
-                  </Text>
+            const image =
+              listing.images?.find((img: any) => img.isPrimary)?.image?.url ||
+              listing.images?.[0]?.image?.url ||
+              '/placeholder.jpg'
 
-                  <Group gap="sm" mt="xs">
-                    <Text size="sm">4 Beds</Text>
-                    <Text size="sm">3 Baths</Text>
-                  </Group>
-                </Stack>
-              </Card>
-            </Grid.Col>
-          ))}
+            return (
+              <GridCol key={listing.id} span={{ base: 12, md: 4 }}>
+                <Card shadow="sm" radius="md" withBorder p={0}>
+                  {/* IMAGE */}
+                  <CardSection>
+                    <Image src={image} h={220} alt={property?.title || 'Property'} fit="cover" />
+                  </CardSection>
+
+                  {/* CONTENT */}
+                  <Stack p="md" gap={4}>
+                    <Text fw={600} size="lg" lineClamp={1}>
+                      {property?.title || 'Untitled Property'}
+                    </Text>
+                    <Text fw={700}>Rs. {listing.price?.toLocaleString() || 'N/A'}</Text>
+
+                    <Text size="sm" c="dimmed">
+                      {location
+                        ? `${location.district}, ${location.province}`
+                        : 'Location not available'}
+                    </Text>
+
+                    <Group gap="sm" mt="xs">
+                      <Text size="sm">{property?.bedrooms ?? 0} Beds</Text>
+                      <Text size="sm">{property?.bathrooms ?? 0} Baths</Text>
+                    </Group>
+                  </Stack>
+                </Card>
+              </GridCol>
+            )
+          })}
         </Grid>
       </Container>
 
       {/* CTA */}
       <Container size="xl" py={80}>
-        <Card
-          radius="xl"
-          p={40}
-          style={{
-            background: '#1c1c1c',
-            color: 'white',
-          }}
-        >
+        <Card radius="xl" p={40} style={{ background: '#1c1c1c', color: 'white' }}>
           <Stack>
             <Title>List Your Property</Title>
-
             <Text>Reach thousands of buyers across Nepal.</Text>
-
             <Button color="green" w="fit-content">
               Get Started
             </Button>

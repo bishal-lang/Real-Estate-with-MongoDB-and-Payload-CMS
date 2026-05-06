@@ -3,6 +3,14 @@ import type { CollectionConfig } from 'payload'
 export const Properties: CollectionConfig = {
   slug: 'properties',
 
+  access: {
+    read: () => true,
+  },
+
+  admin: {
+    useAsTitle: 'title',
+  },
+
   fields: [
     { name: 'owner', type: 'relationship', relationTo: 'users' },
     { name: 'agent', type: 'relationship', relationTo: 'agents' },
@@ -33,8 +41,16 @@ export const Properties: CollectionConfig = {
       name: 'images',
       type: 'array',
       fields: [
-        { name: 'url', type: 'text' },
-        { name: 'isPrimary', type: 'checkbox' },
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+        {
+          name: 'isPrimary',
+          type: 'checkbox',
+        },
       ],
     },
   ],

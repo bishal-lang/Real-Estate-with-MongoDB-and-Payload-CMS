@@ -16,6 +16,8 @@ import { Reviews } from './collections/Reviews'
 import { Transactions } from './collections/Transactions'
 import { Locations } from './collections/Locations'
 import { Leads } from './collections/Leads'
+import { Conversations } from './collections/Conversations'
+import { Messages } from './collections/Messages'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -45,6 +47,8 @@ export default buildConfig({
     Reviews,
     Transactions,
     Leads,
+    Conversations,
+    Messages,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET!,

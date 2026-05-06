@@ -78,6 +78,8 @@ export interface Config {
     reviews: Review;
     transactions: Transaction;
     leads: Lead;
+    conversations: Conversation;
+    messages: Message;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -96,6 +98,8 @@ export interface Config {
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     transactions: TransactionsSelect<false> | TransactionsSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
+    conversations: ConversationsSelect<false> | ConversationsSelect<true>;
+    messages: MessagesSelect<false> | MessagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -145,6 +149,8 @@ export interface User {
   phone?: string | null;
   role: 'user' | 'agent' | 'admin';
   avatar?: (string | null) | Media;
+  savedListings?: (string | Listing)[] | null;
+  isPremium?: boolean | null;
   verified?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -186,47 +192,25 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "agencies".
+ * via the `definition` "listings".
  */
-export interface Agency {
+export interface Listing {
   id: string;
-  name: string;
-  registrationNumber?: string | null;
-  province?: string | null;
+  property?: (string | null) | Property;
+  listingType?: ('for_sale' | 'for_rent') | null;
+  price?: number | null;
+  negotiable?: boolean | null;
+  featured?: boolean | null;
+  views?: number | null;
+  images?:
+    | {
+        image: string | Media;
+        isPrimary?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "agents".
- */
-export interface Agent {
-  id: string;
-  user: string | User;
-  agency?: (string | null) | Agency;
-  licenseNo?: string | null;
-  specializations?: string[] | null;
-  districts?: string[] | null;
-  commissionRate?: number | null;
-  verified?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "inquiries".
- */
-export interface Inquiry {
-  id: string;
-  property: string | Property;
-  user: string | User;
-  agent?: (string | null) | Agent;
-  message: string;
-  phone?: string | null;
-  preferredContact?: ('call' | 'whatsapp' | 'email') | null;
-  status?: ('pending' | 'replied' | 'closed') | null;
-  createdAt: string;
-  updatedAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -247,11 +231,40 @@ export interface Property {
   parking?: number | null;
   images?:
     | {
-        url?: string | null;
+        image: string | Media;
         isPrimary?: boolean | null;
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "agents".
+ */
+export interface Agent {
+  id: string;
+  displayName?: string | null;
+  user: string | User;
+  agency?: (string | null) | Agency;
+  licenseNo?: string | null;
+  specializations?: string[] | null;
+  districts?: string[] | null;
+  commissionRate?: number | null;
+  verified?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "agencies".
+ */
+export interface Agency {
+  id: string;
+  name: string;
+  registrationNumber?: string | null;
+  province?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -275,18 +288,19 @@ export interface Location {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "listings".
+ * via the `definition` "inquiries".
  */
-export interface Listing {
+export interface Inquiry {
   id: string;
-  property?: (string | null) | Property;
-  listingType?: ('for_sale' | 'for_rent') | null;
-  price?: number | null;
-  negotiable?: boolean | null;
-  featured?: boolean | null;
-  views?: number | null;
-  updatedAt: string;
+  listings: string | Listing;
+  user: string | User;
+  agent?: (string | null) | Agent;
+  message: string;
+  phone?: string | null;
+  preferredContact?: ('call' | 'whatsapp' | 'email') | null;
+  status?: ('pending' | 'replied' | 'closed') | null;
   createdAt: string;
+  updatedAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -329,6 +343,29 @@ export interface Lead {
   listing?: (string | null) | Listing;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations".
+ */
+export interface Conversation {
+  id: string;
+  participants?: (string | User)[] | null;
+  listing?: (string | null) | Listing;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages".
+ */
+export interface Message {
+  id: string;
+  conversation?: (string | null) | Conversation;
+  sender?: (string | null) | User;
+  text?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -397,6 +434,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'leads';
         value: string | Lead;
+      } | null)
+    | ({
+        relationTo: 'conversations';
+        value: string | Conversation;
+      } | null)
+    | ({
+        relationTo: 'messages';
+        value: string | Message;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -449,6 +494,8 @@ export interface UsersSelect<T extends boolean = true> {
   phone?: T;
   role?: T;
   avatar?: T;
+  savedListings?: T;
+  isPremium?: T;
   verified?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -501,6 +548,7 @@ export interface AgenciesSelect<T extends boolean = true> {
  * via the `definition` "agents_select".
  */
 export interface AgentsSelect<T extends boolean = true> {
+  displayName?: T;
   user?: T;
   agency?: T;
   licenseNo?: T;
@@ -516,7 +564,7 @@ export interface AgentsSelect<T extends boolean = true> {
  * via the `definition` "inquiries_select".
  */
 export interface InquiriesSelect<T extends boolean = true> {
-  property?: T;
+  listings?: T;
   user?: T;
   agent?: T;
   message?: T;
@@ -537,6 +585,13 @@ export interface ListingsSelect<T extends boolean = true> {
   negotiable?: T;
   featured?: T;
   views?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        isPrimary?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -578,7 +633,7 @@ export interface PropertiesSelect<T extends boolean = true> {
   images?:
     | T
     | {
-        url?: T;
+        image?: T;
         isPrimary?: T;
         id?: T;
       };
@@ -623,6 +678,27 @@ export interface LeadsSelect<T extends boolean = true> {
   listing?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations_select".
+ */
+export interface ConversationsSelect<T extends boolean = true> {
+  participants?: T;
+  listing?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages_select".
+ */
+export interface MessagesSelect<T extends boolean = true> {
+  conversation?: T;
+  sender?: T;
+  text?: T;
+  createdAt?: T;
+  updatedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

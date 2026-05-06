@@ -1,16 +1,13 @@
-'use client'
-
 import { Flex, Box } from '@mantine/core'
 import ChatHeader from './ChatHeader'
 import MessageBubble from './MessageBubble'
 import MessageInput from './MessageInput'
 
-export default function ChatWindow() {
+export default function ChatWindow({ messages }: { messages: any[] }) {
   return (
     <Flex direction="column" h="100%">
-      <ChatHeader />
+      <ChatHeader conversation={undefined} currentUserId={''} />
 
-      {/* Messages */}
       <Box
         style={{
           flex: 1,
@@ -19,23 +16,14 @@ export default function ChatWindow() {
           background: '#f8f9ff',
         }}
       >
-        <MessageBubble
-          type="received"
-          text="Good morning! I've just received the updated structural reports."
-          time="10:14 AM"
-        />
-
-        <MessageBubble
-          type="sent"
-          text="Does this impact the estimated completion timeline?"
-          time="10:16 AM"
-        />
-
-        <MessageBubble
-          type="received"
-          text="It should bring it forward by about two weeks."
-          time="10:20 AM"
-        />
+        {messages.map((msg) => (
+          <MessageBubble
+            key={msg.id}
+            type={msg.isMine ? 'sent' : 'received'}
+            text={msg.text}
+            time={new Date(msg.createdAt).toLocaleTimeString()}
+          />
+        ))}
       </Box>
 
       <MessageInput />

@@ -1,5 +1,6 @@
 import { Stack } from '@mantine/core'
 import InquiryCard from './InquiryCard'
+import { getInquiries } from '@/lib/getInquiries'
 
 type InquiryStatus = 'responded' | 'scheduled' | 'pending'
 
@@ -11,34 +12,24 @@ type Inquiry = {
   image: string
 }
 
-const data: Inquiry[] = [
-  {
-    title: 'The Obsidian Penthouse',
-    location: 'Mayfair, London',
-    status: 'responded',
-    date: 'Oct 12, 2023',
-    image: '...',
-  },
-  {
-    title: 'Azure Bay Estate',
-    location: 'Antibes, France',
-    status: 'scheduled',
-    date: 'Oct 08, 2023',
-    image: '...',
-  },
-  {
-    title: 'The Ironwork Lofts',
-    location: 'Tribeca, New York',
-    status: 'pending',
-    date: 'Oct 05, 2023',
-    image: '...',
-  },
-]
+export default async function InquiriesList() {
+  const data = await getInquiries()
 
-export default function InquiriesList() {
+  const inquiries: Inquiry[] = data.docs.map((item: any) => {
+    const listing = item.listing
+
+    return {
+      title: listing?.title || 'Untitled',
+      location: listing?.location || 'Unknown',
+      status: item.status,
+      date: new Date(item.createdAt).toLocaleDateString(),
+      image: listing?.image?.url || '/fallback.jpg',
+    }
+  })
+
   return (
     <Stack>
-      {data.map((item, i) => (
+      {inquiries.map((item, i) => (
         <InquiryCard key={i} {...item} />
       ))}
     </Stack>

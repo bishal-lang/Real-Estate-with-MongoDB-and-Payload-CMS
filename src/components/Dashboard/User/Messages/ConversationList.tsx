@@ -1,9 +1,13 @@
-'use client'
-
 import { Stack, Text, ScrollArea } from '@mantine/core'
 import ConversationItem from './ConversationItem'
 
-export default function ConversationList() {
+export default function ConversationList({
+  conversations,
+  activeId,
+}: {
+  conversations: any[]
+  activeId: string
+}) {
   return (
     <>
       <Text fw={600} p="md">
@@ -12,9 +16,9 @@ export default function ConversationList() {
 
       <ScrollArea h="100%">
         <Stack gap="xs" p="sm">
-          <ConversationItem active />
-          <ConversationItem />
-          <ConversationItem />
+          {conversations.map((conv) => (
+            <ConversationItem key={conv.id} active={conv.id === activeId} conversation={conv} />
+          ))}
         </Stack>
       </ScrollArea>
     </>

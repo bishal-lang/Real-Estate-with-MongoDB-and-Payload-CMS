@@ -92,7 +92,6 @@ export const Agents: CollectionConfig = {
       ],
     },
 
-    // 🔹 CONTACT INFO
     {
       name: 'phone',
       type: 'text',

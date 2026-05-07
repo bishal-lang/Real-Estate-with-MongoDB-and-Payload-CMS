@@ -1,29 +1,19 @@
 import { cookies } from 'next/headers'
+import payload from 'payload'
 
 export async function getCurrentUser() {
   const cookieStore = await cookies()
+  const token = cookieStore.get('payload-token')?.value
 
-  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+  if (!token) return null
 
-  // ✅ manually build cookie header
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ')
+  const headers = new Headers()
+  headers.set('Authorization', `JWT ${token}`)
 
-  const res = await fetch(`${baseUrl}/api/users/me`, {
-    headers: {
-      Cookie: cookieHeader,
-    },
-    cache: 'no-store',
-  })
-
-  if (!res.ok) {
-    console.error('ME FAILED:', res.status)
+  try {
+    const { user } = await payload.auth({ headers })
+    return user
+  } catch {
     return null
   }
-
-  const data = await res.json()
-
-  return data.user || null
 }

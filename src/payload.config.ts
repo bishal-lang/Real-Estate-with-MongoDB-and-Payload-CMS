@@ -23,11 +23,21 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
 
-  cors: ['http://localhost:3000', 'http://192.168.1.94:3000', 'http://0.0.0.0:3000'],
+  cors: [
+    'http://localhost:3000',
+    'http://192.168.1.94:3000',
+    'http://0.0.0.0:3000',
+    process.env.PAYLOAD_PUBLIC_SERVER_URL || '',
+  ].filter(Boolean),
 
-  csrf: ['http://localhost:3000', 'http://192.168.1.94:3000', 'http://0.0.0.0:3000'],
+  csrf: [
+    'http://localhost:3000',
+    'http://192.168.1.94:3000',
+    'http://0.0.0.0:3000',
+    process.env.PAYLOAD_PUBLIC_SERVER_URL || '',
+  ].filter(Boolean),
 
   admin: {
     user: Users.slug,

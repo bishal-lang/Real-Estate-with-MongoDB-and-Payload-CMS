@@ -32,7 +32,7 @@ export default function LoginForm() {
       const res = await fetch('/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // ✅ CRITICAL
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       })
 

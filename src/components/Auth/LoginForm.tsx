@@ -37,13 +37,15 @@ export default function LoginForm() {
       })
 
       const data = await res.json()
+      const role = data.user.role
 
       if (!res.ok) {
         throw new Error(data.errors?.[0]?.message || 'Login failed')
       }
 
       const user = data.user
-      console.log(data)
+      console.log('LOGIN USER:', data.user)
+      console.log('ROLE:', data.user.role)
 
       switch (user.role) {
         case 'agent':

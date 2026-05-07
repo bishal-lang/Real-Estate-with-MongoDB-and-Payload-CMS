@@ -32,8 +32,10 @@ export default buildConfig({
     process.env.PAYLOAD_PUBLIC_SERVER_URL || '',
   ].filter(Boolean),
 
+  cookiePrefix: 'payload',
   csrf: [
     'http://localhost:3000',
+    'https://gaffe-collector-unglazed.ngrok-free.dev',
     'http://192.168.1.94:3000',
     'http://0.0.0.0:3000',
     process.env.PAYLOAD_PUBLIC_SERVER_URL || '',

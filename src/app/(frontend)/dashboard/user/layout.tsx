@@ -5,6 +5,15 @@ import { getCurrentUser } from '@/lib/getCurrentUser'
 import { redirect } from 'next/navigation'
 
 export default async function UserLayout({ children }: { children: React.ReactNode }) {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  if (user.role !== 'user') {
+    redirect('/dashboard')
+  }
   return (
     <AppShell header={{ height: 70 }} navbar={{ width: 260, breakpoint: 'sm' }} padding="lg">
       <AppShellHeader>

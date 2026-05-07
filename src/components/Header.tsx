@@ -3,9 +3,16 @@
 import { useEffect, useState } from 'react'
 import { Box, Container, Group, Button, Text, Anchor } from '@mantine/core'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
+type User = {
+  role: 'user' | 'agent' | 'admin'
+}
 
 export default function AppHeader() {
-  const [user, setUser] = useState<any>(null)
+  const router = useRouter()
+
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -13,14 +20,20 @@ export default function AppHeader() {
       try {
         const res = await fetch('/api/users/me', {
           credentials: 'include',
+          cache: 'no-store',
         })
 
-        if (res.ok) {
-          const data = await res.json()
-          setUser(data.user)
+        if (!res.ok) {
+          setUser(null)
+          return
         }
+
+        const data = await res.json()
+
+        setUser(data.user)
       } catch (err) {
         console.error(err)
+        setUser(null)
       } finally {
         setLoading(false)
       }
@@ -30,13 +43,27 @@ export default function AppHeader() {
   }, [])
 
   const handleLogout = async () => {
-    await fetch('/api/users/logout', {
-      method: 'POST',
-      credentials: 'include',
-    })
+    try {
+      await fetch('/api/users/logout', {
+        method: 'POST',
+        credentials: 'include',
+      })
 
-    window.location.reload()
+      setUser(null)
+
+      router.push('/login')
+      router.refresh()
+    } catch (err) {
+      console.error(err)
+    }
   }
+
+  const dashboardHref =
+    user?.role === 'agent'
+      ? '/dashboard/agent'
+      : user?.role === 'admin'
+        ? '/admin'
+        : '/dashboard/user'
 
   return (
     <Box
@@ -59,12 +86,15 @@ export default function AppHeader() {
             <Anchor component={Link} href="/">
               Home
             </Anchor>
+
             <Anchor component={Link} href="/listings">
               Listings
             </Anchor>
+
             <Anchor component={Link} href="/about">
               About Us
             </Anchor>
+
             <Anchor component={Link} href="/contact">
               Contact Us
             </Anchor>
@@ -74,13 +104,15 @@ export default function AppHeader() {
             {!loading &&
               (user ? (
                 <>
-                  <Button component={Link} href="/dashboard" variant="subtle">
+                  <Button component={Link} href={dashboardHref} variant="subtle">
                     Dashboard
                   </Button>
 
-                  <Button component={Link} href="/agentRegister" color="green">
-                    Become an Agent
-                  </Button>
+                  {user.role === 'user' && (
+                    <Button component={Link} href="/agentRegister" color="green">
+                      Become an Agent
+                    </Button>
+                  )}
 
                   <Button color="red" variant="light" onClick={handleLogout}>
                     Logout

@@ -37,7 +37,6 @@ export default function RegisterForm() {
     setError(null)
 
     try {
-      // ✅ CREATE USER (Payload native endpoint)
       const res = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -55,7 +54,6 @@ export default function RegisterForm() {
         throw new Error(data?.errors?.[0]?.message || 'Registration failed')
       }
 
-      // ✅ AUTO LOGIN
       const loginRes = await fetch('/api/users/login', {
         method: 'POST',
         credentials: 'include',
@@ -72,7 +70,6 @@ export default function RegisterForm() {
         throw new Error(loginData?.errors?.[0]?.message || 'Login failed')
       }
 
-      // ✅ redirect after success
       router.push('/dashboard/user')
     } catch (err: any) {
       setError(err.message)

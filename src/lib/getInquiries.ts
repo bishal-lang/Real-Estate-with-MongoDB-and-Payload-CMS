@@ -1,12 +1,15 @@
 import { headers } from 'next/headers'
 
 export async function getInquiries() {
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : API_BASE
+
   const headersList = await headers()
 
   const protocol = headersList.get('x-forwarded-proto') || 'http'
   const host = headersList.get('host')
 
-  const url = new URL(`${protocol}://${host}/api/inquiries`)
+  const url = new URL(`/api/inquiries`, baseUrl)
   url.searchParams.set('depth', '2')
 
   const res = await fetch(url.toString(), {

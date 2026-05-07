@@ -1,8 +1,14 @@
 import type { CollectionConfig } from 'payload'
 
+type UserType = {
+  role: 'user' | 'agent' | 'admin'
+}
+
 export const Users: CollectionConfig = {
   slug: 'users',
-  auth: true,
+  auth: {
+    verify: false,
+  },
 
   versions: false,
 
@@ -24,7 +30,20 @@ export const Users: CollectionConfig = {
       name: 'role',
       type: 'select',
       defaultValue: 'user',
-      options: ['user', 'agent', 'admin'],
+      options: [
+        {
+          label: 'user',
+          value: 'user',
+        },
+        {
+          label: 'agent',
+          value: 'agent',
+        },
+        {
+          label: 'admin',
+          value: 'admin',
+        },
+      ],
     },
 
     {
